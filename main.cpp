@@ -5,6 +5,7 @@
 #include<vector>
 #include <algorithm>
 #include <queue>
+#include <ctime>
 
 #define VEC_SIZE 100000
 #define NUM_TEST 1
@@ -103,6 +104,56 @@ chrono::duration<double> elapsed = finish - start;
 cout << "Elapsed time: " << elapsed.count() << " s\n";
 }
 
+vector<int>::iterator partition(const vector<int> &A, 
+const vector<int>::iterator &p,
+const vector<int>::iterator &r) {
+// Get a random element within A[p:r].
+auto seed = clock() * clock() * clock();
+default_random_engine dre(seed);
+uniform_int_distribution<size_t> di(0, r - p);
+
+auto random_it = p;
+random_it = p + di(dre);
+
+// Swap values of random_it and r.
+auto tmp = *random_it;
+*random_it = *r;
+*r = tmp;
+
+auto pivot = *r;
+
+int iless = -1;
+for(int i = 0; i < r - p; i++) {
+if(*(p+i) <= pivot) {
+iless++;
+if(iless != i) {
+// Swap *(p+iless) and *(p+i)
+tmp = *(p+iless);
+*(p+iless) = *(p+i);
+*(p+i) = tmp;
+}
+}
+}
+
+// Swap *(p+iless+1) and *r
+*r = *(p+iless+1);
+*(p+iless+1) = pivot;
+return p + iless + 1;
+}
+
+void quickSortRecur(const vector<int> &A, const vector<int>::iterator &p,
+const vector<int>::iterator &r) {
+if(p < r) {
+auto q = partition(A, p, r);
+quickSortRecur(A, p, q-1);
+quickSortRecur(A, q+1, r);
+}
+}
+
+void quickSort(vector<int> data) {
+quickSortRecur(data, data.begin(), data.end());
+}
+
 int main() {
 for(int i=0; i<NUM_TEST;i++) {
 vector<int> a = gen_random();
@@ -117,5 +168,8 @@ timeSort(c,insertionSort);
 timeSort(a,radixSort);
 timeSort(b,radixSort);
 timeSort(c,radixSort);
+timeSort(a,quickSort);
+timeSort(b,quickSort);
+timeSort(c,quickSort);
 }
 }
