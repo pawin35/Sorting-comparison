@@ -139,8 +139,8 @@ vector<int>::iterator partition(const vector<int> &A,
     {
         if (*(p + i) <= pivot)
         {
-            iless++;
             if (iless != i)
+            iless++;
             {
                 // Swap *(p+iless) and *(p+i)
                 tmp = *(p + iless);
